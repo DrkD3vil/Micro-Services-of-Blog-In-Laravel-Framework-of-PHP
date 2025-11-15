@@ -43,12 +43,8 @@ class AuthController extends Controller
             'user' => $user
         ], 201);
     }
-    /**
-     * Login user and generate token
-     */
     public function login(Request $request): JsonResponse
     {
-        // Validate request
         $validator = Validator::make($request->all(), [
             'email' => 'required|email',
             'password' => 'required|string|min:6',
@@ -61,7 +57,6 @@ class AuthController extends Controller
             ], 422);
         }
 
-        // Check user
         $user = User::where('email', $request->email)->first();
 
         if (!$user || !Hash::check($request->password, $user->password)) {
@@ -71,7 +66,9 @@ class AuthController extends Controller
             ], 401);
         }
 
-        // Create token
+
+
+
         $token = $user->createToken('auth_token')->plainTextToken;
 
         return response()->json([
@@ -80,6 +77,86 @@ class AuthController extends Controller
             'token' => $token,
             'user' => $user
         ], 200);
+
+
+        if ($user->author_status == 'requested') {
+            if ($user->author_status !== 'approved') {
+                return response()->json([
+                    'status' => true,
+                    'message' => 'Your account is not approved by admin yet.',
+                ], 201);
+            }
+        }
+    }
+
+    public function requestAuthor(Request $request): JsonResponse
+    {
+        $user = $request->user();
+
+        if ($user->author_status === 'approved') {
+            return response()->json([
+                'status' => false,
+                'message' => 'You are already an approved author.'
+            ], 400);
+        }
+
+        if ($user->author_status === 'requested') {
+            return response()->json([
+                'status' => false,
+                'message' => 'You have already requested author access. Wait for admin approval.'
+            ], 400);
+        }
+
+        // Set as requested
+        $user->author_status = 'requested';
+        $user->save();
+
+        return response()->json([
+            'status' => true,
+            'message' => 'Author request submitted successfully. Wait for admin approval.'
+        ], 200);
+    }
+
+    public function requestedAuthors(): JsonResponse
+    {
+        $this->authorizeAdmin();
+
+        $pending = User::where('author_status', 'requested')->get();
+
+        return response()->json($pending);
+    }
+
+    public function approveAuthor($id): JsonResponse
+    {
+        $this->authorizeAdmin();
+
+        $user = User::findOrFail($id);
+        $user->author_status = 'approved';
+        $user->save();
+
+        return response()->json([
+            'status' => true,
+            'message' => 'Author approved successfully'
+        ]);
+    }
+
+    public function authors(): JsonResponse
+{
+    // Optional: uncomment if you want only admins to access this
+    // $this->authorizeAdmin();
+
+    // Fetch only approved authors
+    $approvedAuthors = User::where('author_status', 'approved')->get();
+
+    return response()->json($approvedAuthors);
+}
+
+    private function authorizeAdmin()
+    {
+        $user = Auth::user();
+        if (!$user || !$user->is_admin) {
+            abort(403, 'Unauthorized');
+        }
     }
 
 

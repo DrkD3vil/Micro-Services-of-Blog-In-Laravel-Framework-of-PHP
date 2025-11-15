@@ -10,13 +10,24 @@ Route::get('/user', function (Request $request) {
 
 // Public routes
 
-Route::post ('/register', [AuthController::class, 'register']);
-Route::post ('/login', [AuthController::class, 'login']);
+Route::post('/register', [AuthController::class, 'register']);
+Route::post('/login', [AuthController::class, 'login']);
 
 // Protected Routes
-Route::middleware('auth:sanctum')->group(function(){
+// Routes protected by Sanctum
+Route::middleware('auth:sanctum')->group(function () {
+    // General user routes
     Route::get('/me', [AuthController::class, 'me']);
     Route::post('/logout', [AuthController::class, 'logout']);
-    Route::get('/users', [AuthController::class, 'users']);
-});
 
+    // Fetch all users (admin only inside controller)
+    Route::get('/users', [AuthController::class, 'users']);
+
+    // Request author role (regular user)
+    Route::post('/request-author', [AuthController::class, 'requestAuthor']);
+
+    // Admin only routes
+    Route::get('/requested-authors', [AuthController::class, 'requestedAuthors']);
+    Route::post('/approve-author/{id}', [AuthController::class, 'approveAuthor']);
+    Route::get('/authors', [AuthController::class, 'authors']);
+});
