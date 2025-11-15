@@ -13,7 +13,7 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 class AuthController extends Controller
 {
     //Register
-    public function register(Request $request):JsonResponse
+    public function register(Request $request): JsonResponse
     {
         // Validate input
         $validator = Validator::make($request->all(), [
@@ -43,10 +43,10 @@ class AuthController extends Controller
             'user' => $user
         ], 201);
     }
-     /**
+    /**
      * Login user and generate token
      */
-    public function login(Request $request):JsonResponse
+    public function login(Request $request): JsonResponse
     {
         // Validate request
         $validator = Validator::make($request->all(), [
@@ -112,4 +112,23 @@ class AuthController extends Controller
         ], 401);
     }
 
+    public function users(Request $request): JsonResponse
+    {
+        // Check if the authenticated user is admin
+        if ($request->user()->is_admin) {
+            $users = User::all();
+
+            return response()->json([
+                'status' => true,
+                'message' => 'Users fetched successfully',
+                'data' => $users
+            ], 200);
+        }
+
+        // If not admin, return unauthorized
+        return response()->json([
+            'status' => false,
+            'message' => 'You are not authorized to view users.',
+        ], 403);
+    }
 }
