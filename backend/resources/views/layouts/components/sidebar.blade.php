@@ -35,10 +35,165 @@
                 <i data-lucide="folder-tree" class="w-5 h-5"></i>
                 <span class="nav-text ml-3">Categories</span>
             </a>
-            <a href="#" class="nav-link">
-                <i data-lucide="users" class="w-5 h-5"></i>
-                <span class="nav-text ml-3">Authors</span>
-            </a>
+{{-- DropDown style --}}
+
+<div x-data="{ open: false }" class="relative">
+    <button
+        @click="open = !open"
+        class="nav-link flex items-center w-full transition-all duration-300"
+        :class="open ? 'nav-link-active' : ''"
+    >
+        <i data-lucide="users" class="w-5 h-5 flex-shrink-0"></i>
+        <span class="nav-text ml-3 flex-1 text-left">Authors Management</span>
+        <i
+            data-lucide="chevron-down"
+            class="w-4 h-4 transition-transform duration-300 flex-shrink-0"
+            :class="open ? 'rotate-180' : ''"
+        ></i>
+    </button>
+
+    <!-- Dropdown Menu -->
+    <div
+        x-show="open"
+        x-transition:enter="transition ease-out duration-200"
+        x-transition:enter-start="opacity-0 transform -translate-y-2"
+        x-transition:enter-end="opacity-100 transform translate-y-0"
+        x-transition:leave="transition ease-in duration-150"
+        x-transition:leave-start="opacity-100 transform translate-y-0"
+        x-transition:leave-end="opacity-0 transform -translate-y-2"
+        @click.away="open = false"
+        class="absolute left-0 right-0 mt-2 glass-card border border-border-color rounded-xl shadow-xl py-3 z-50 overflow-hidden"
+        style="backdrop-filter: blur(16px);"
+    >
+        <!-- Active indicator bar -->
+        <div class="absolute left-0 top-0 bottom-0 w-1 bg-gradient-to-b from-accent-color to-info opacity-80"></div>
+
+        <!-- Dropdown items -->
+        <a
+            href="{{ url('/request-author') }}"
+            class="flex items-center px-4 py-3 text-sm transition-all duration-200 group relative hover:bg-bg-tertiary/50 mx-2 rounded-lg"
+        >
+            <div class="w-8 h-8 rounded-lg bg-warning/20 flex items-center justify-center mr-3 group-hover:scale-110 transition-transform">
+                <i data-lucide="user-plus" class="w-4 h-4 text-warning"></i>
+            </div>
+            <div class="flex-1">
+                <div class="font-medium text-primary">Request Author</div>
+                <div class="text-xs text-muted mt-0.5">Submit new author request</div>
+            </div>
+            <i data-lucide="arrow-right" class="w-4 h-4 text-muted group-hover:text-accent-color group-hover:translate-x-1 transition-all"></i>
+        </a>
+
+        <div class="h-px bg-border-color mx-4 my-2"></div>
+
+        <a
+            href="{{ url('/requested-authors') }}"
+            class="flex items-center px-4 py-3 text-sm transition-all duration-200 group relative hover:bg-bg-tertiary/50 mx-2 rounded-lg"
+        >
+            <div class="w-8 h-8 rounded-lg bg-info/20 flex items-center justify-center mr-3 group-hover:scale-110 transition-transform">
+                <i data-lucide="clock" class="w-4 h-4 text-info"></i>
+            </div>
+            <div class="flex-1">
+                <div class="font-medium text-primary">Pending Requests</div>
+                <div class="text-xs text-muted mt-0.5">{{ $pendingCount ?? '0' }} awaiting approval</div>
+            </div>
+            <div class="px-2 py-1 bg-warning/20 text-warning text-xs rounded-full font-medium">
+                {{ $pendingCount ?? '0' }}
+            </div>
+        </a>
+
+        <div class="h-px bg-border-color mx-4 my-2"></div>
+
+        <a
+            href="{{ url('/authors') }}"
+            class="flex items-center px-4 py-3 text-sm transition-all duration-200 group relative hover:bg-bg-tertiary/50 mx-2 rounded-lg"
+        >
+            <div class="w-8 h-8 rounded-lg bg-success/20 flex items-center justify-center mr-3 group-hover:scale-110 transition-transform">
+                <i data-lucide="user-check" class="w-4 h-4 text-success"></i>
+            </div>
+            <div class="flex-1">
+                <div class="font-medium text-primary">Approved Authors</div>
+                <div class="text-xs text-muted mt-0.5">Manage approved authors</div>
+            </div>
+            <i data-lucide="arrow-right" class="w-4 h-4 text-muted group-hover:text-accent-color group-hover:translate-x-1 transition-all"></i>
+        </a>
+
+        <!-- Bottom gradient effect -->
+        <div class="absolute bottom-0 left-0 right-0 h-1 bg-gradient-to-r from-accent-color via-info to-success opacity-60"></div>
+    </div>
+</div>
+
+<!-- Add these styles to your existing CSS -->
+<style>
+    /* Enhanced Dropdown Styles */
+    .rotate-180 {
+        transform: rotate(180deg);
+    }
+
+    /* Custom scrollbar for dropdown */
+    .dropdown-scrollbar::-webkit-scrollbar {
+        width: 4px;
+    }
+
+    .dropdown-scrollbar::-webkit-scrollbar-thumb {
+        background: var(--accent-color);
+        border-radius: 2px;
+    }
+
+    .dropdown-scrollbar::-webkit-scrollbar-track {
+        background: transparent;
+    }
+
+    /* Hover effects for dropdown items */
+    .dropdown-item {
+        position: relative;
+        overflow: hidden;
+    }
+
+    .dropdown-item::before {
+        content: '';
+        position: absolute;
+        left: 0;
+        top: 0;
+        height: 100%;
+        width: 3px;
+        background: var(--accent-color);
+        transform: scaleX(0);
+        transform-origin: left;
+        transition: transform 0.3s ease;
+    }
+
+    .dropdown-item:hover::before {
+        transform: scaleX(1);
+    }
+
+    /* Pulse animation for notification badge */
+    @keyframes gentle-pulse {
+        0%, 100% {
+            opacity: 1;
+            transform: scale(1);
+        }
+        50% {
+            opacity: 0.8;
+            transform: scale(1.05);
+        }
+    }
+
+    .pulse-notification {
+        animation: gentle-pulse 2s infinite;
+    }
+
+    /* Glass morphism enhancement */
+    .glass-card {
+        background: var(--glass-base);
+        backdrop-filter: blur(16px) saturate(180%);
+        -webkit-backdrop-filter: blur(16px) saturate(180%);
+    }
+</style>
+
+<script src="//unpkg.com/alpinejs" defer></script>
+
+
+{{-- End DropDown --}}
             <a href="#" class="nav-link">
                 <i data-lucide="bar-chart-3" class="w-5 h-5"></i>
                 <span class="nav-text ml-3">Analytics</span>
