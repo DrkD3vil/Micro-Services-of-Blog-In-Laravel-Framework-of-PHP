@@ -31,6 +31,7 @@ class AuthController extends Controller
         }
 
         $user->author_status = 'requested';
+
         $user->save();
 
         return back()->with('success', 'Your request has been submitted. Wait for admin approval.');
@@ -49,9 +50,21 @@ class AuthController extends Controller
     {
         $user = User::findOrFail($id);
         $user->author_status = 'approved';
+        $user->role = 'author';
         $user->save();
 
         return back()->with('success', 'Author approved successfully.');
+    }
+
+    // Admin reject user
+    public function rejectAuthor($id)
+    {
+        $user = User::findOrFail($id);
+        $user->author_status = 'rejected';
+        $user->role = 'user'; // optional: reset role to user if needed
+        $user->save();
+
+        return back()->with('error', 'Author request has been rejected.');
     }
 
     // Admin: Show approved authors

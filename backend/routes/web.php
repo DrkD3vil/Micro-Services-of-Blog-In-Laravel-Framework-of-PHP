@@ -31,16 +31,16 @@ Route::middleware(['auth'])->group(function () {
     Route::middleware('admin')->group(function () {
         Route::get('/requested-authors', [AuthController::class, 'requestedAuthors']);
         Route::post('/approve-author/{id}', [AuthController::class, 'approveAuthor']);
+
+        // Admin rejects author
+        Route::post('/reject-author/{id}', [AuthController::class, 'rejectAuthor']);
         Route::get('/authors', [AuthController::class, 'authors']);
     });
 
     Route::resource('categories', CategoryController::class);
-
-
 });
 
-Route::middleware(['auth'])->group(function () {
-});
+Route::middleware(['auth'])->group(function () {});
 
 
-require __DIR__.'/auth.php';
+require __DIR__ . '/auth.php';

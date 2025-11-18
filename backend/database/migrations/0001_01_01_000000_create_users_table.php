@@ -13,11 +13,19 @@ return new class extends Migration
     {
         Schema::create('users', function (Blueprint $table) {
             $table->id();
-            $table->uuid('uuid');   // You must provide a column name
+            $table->uuid('uuid')->unique();   // Unique UUID
             $table->string('name');
             $table->string('email')->unique();
             $table->boolean('is_admin')->default(false);
             $table->enum('author_status', ['pending', 'approved', 'requested', 'rejected'])->default('pending');
+            $table->enum('role', ['author', 'user'])->default('user');
+
+            // Optional user info
+            $table->string('phone')->nullable();          // For contact number
+            $table->string('address')->nullable();        // Address
+            $table->string('image')->nullable();          // Profile image path
+            $table->text('more_info')->nullable();        // JSON/text for future info
+
             $table->timestamp('email_verified_at')->nullable();
             $table->string('password');
             $table->rememberToken();
