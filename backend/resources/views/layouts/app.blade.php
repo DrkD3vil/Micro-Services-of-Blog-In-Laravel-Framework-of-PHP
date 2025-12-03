@@ -17,6 +17,7 @@
 
     {{-- @yield('sidebar') --}}
     @include('layouts.components.sidebar')
+    @include('layouts.components.mobile_sidebar')
 
 
     <!-- Main Content Area -->

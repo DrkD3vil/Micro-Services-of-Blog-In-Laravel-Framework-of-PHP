@@ -66,4 +66,35 @@ class User extends Authenticatable
             $model->uuid = (string) Str::uuid();
         });
     }
+    /**
+     * Impersonate the given user
+     */
+    public function impersonate(User $user)
+    {
+        session()->put('impersonate', $user->id);
+    }
+
+    /**
+     * Check if current user is being impersonated
+     */
+    public function isImpersonated()
+    {
+        return session()->has('impersonate');
+    }
+
+    /**
+     * Leave impersonation
+     */
+    public function leaveImpersonation()
+    {
+        session()->forget('impersonate');
+    }
+
+    /**
+     * Get the original user ID when impersonating
+     */
+    public function getImpersonatorId()
+    {
+        return session()->get('impersonate');
+    }
 }

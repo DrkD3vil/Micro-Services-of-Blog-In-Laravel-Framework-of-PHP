@@ -8,6 +8,12 @@
                     <i data-lucide="menu" class="w-6 h-6"></i>
                 </button>
 
+                <!-- Mobile toggle button for sidebar -->
+                <button id="sidebar-toggle-mobile"
+                    class="text-slate-400 hover:text-accent-color transition-colors duration-200 mr-4 lg:hidden">
+                    <i data-lucide="menu" class="w-6 h-6"></i>
+                </button>
+
                 <div
                     class="text-xl font-bold bg-gradient-to-r from-purple-400 to-indigo-500 bg-clip-text text-transparent lg:hidden">
                     BlogSphere</div>
